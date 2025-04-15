@@ -4,6 +4,8 @@ public class Player : MonoBehaviour
 {
     public Vector2 inputVec;
     public float speed;
+    public Scanner scanner;
+    public Hand[] hands;
 
     Rigidbody2D rigid;
     SpriteRenderer spriter;
@@ -14,6 +16,8 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();    // Player 안에 있는 Rigidbody2D가 rigid 라는 변수에 들어가게 된 것
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        scanner = GetComponent<Scanner>();
+        hands = GetComponentsInChildren<Hand>(true);
     }
 
 
@@ -30,6 +34,9 @@ public class Player : MonoBehaviour
 
      void FixedUpdate()
     {
+        if (!GameManager.instance.isLive)
+            return;
+
         //// 1. 힘을 준다.
         //rigid.AddForce(inputVec);
 
@@ -45,12 +52,34 @@ public class Player : MonoBehaviour
 
     void LateUpdate()   // 프레임이 종료되기 전 실행되는 생명주기 함수
     {
+        if (!GameManager.instance.isLive)
+            return;
+
         anim.SetFloat("Speed", inputVec.magnitude);  
         // SetFloat 첫 번째 인자 : Parameter 이름, 두 번째 인자 : inputVec.magnitude : 벡터의 순수한 크기 값
 
         if (inputVec.x != 0)
         {
             spriter.flipX = inputVec.x < 0;     // inputVec.x < 0 가 true or false 반환
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (!GameManager.instance.isLive)
+            return;
+
+        GameManager.instance.health -= Time.deltaTime * 10;
+
+        if (GameManager.instance.health < 0)
+        {
+            for (int index = 2; index < transform.childCount; index++)
+            {
+                transform.GetChild(index).gameObject.SetActive(false);
+            }
+
+            anim.SetTrigger("Dead");
+            GameManager.instance.GameOver();
         }
     }
 }
