@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public float MaxGameTime = 6 * 10f;
 
     [Header("# Player Info")]
+    public int playerID;
     public float health;
     public float maxHealth = 100;
     public int level;
@@ -31,17 +32,26 @@ public class GameManager : MonoBehaviour
         instance = this;    // Awake 생명주기에서 인스턴스 변수를 자기자신 this로 초기화     
     }
 
-    public void GameStart()
+    public void GameStart(int id)
     {
+        playerID = id;
         health = maxHealth;
+
+        player.gameObject.SetActive(true);
         // 임시 스크립트 (첫번째 캐릭터 선택)
-        uiLevelUp.Select(0);
+        uiLevelUp.Select(playerID % 2);
         Resume();
+
+        AudioManager.instance.PlayBgm(true);
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
     }
 
     public void GameOver()
     {
         StartCoroutine(GameOverRoutine());   // 그냥 Stop하면 묘비 애니메이션 못보니깐 delay 시키고
+
+        AudioManager.instance.PlayBgm(false);
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);
     }
 
     IEnumerator GameOverRoutine()
@@ -58,6 +68,7 @@ public class GameManager : MonoBehaviour
 
     public void GameVictory()
     {
+        AudioManager.instance.PlayBgm(false);
         StartCoroutine(GameVictoryRoutine());   // 그냥 Stop하면 묘비 애니메이션 못보니깐 delay 시키고
     }
 
@@ -71,6 +82,8 @@ public class GameManager : MonoBehaviour
         uiResult.gameObject.SetActive(true);
         uiResult.Win();
         Stop();
+
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Win);
     }
 
     public void GameRetry()

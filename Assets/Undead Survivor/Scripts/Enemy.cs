@@ -84,6 +84,8 @@ public class Enemy : MonoBehaviour
         {
             // .. Live, Hit Action
             anime.SetTrigger("Hit");
+
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Hit);
         }
 
         else
@@ -96,6 +98,9 @@ public class Enemy : MonoBehaviour
             anime.SetBool("Dead", true);
             GameManager.instance.kill++;
             GameManager.instance.GetExp();
+
+            if(GameManager.instance.isLive)     // 언데드 사망 사운드는 게임 종료 시에는 나지 않도록 조건 추가
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.Dead);
         }
     }
 
