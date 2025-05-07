@@ -25,11 +25,13 @@ public class GameManager : MonoBehaviour
     public PoolManager pool;
     public LevelUp uiLevelUp;
     public Result uiResult;
+    // public Transform uiJoy;  이거 왜 스크립트가 따로 적용이 안되냐
     public GameObject enemyCleaner;
 
     void Awake()
     {
-        instance = this;    // Awake 생명주기에서 인스턴스 변수를 자기자신 this로 초기화     
+        instance = this;    // Awake 생명주기에서 인스턴스 변수를 자기자신 this로 초기화
+        Application.targetFrameRate = 60;
     }
 
     public void GameStart(int id)
@@ -91,6 +93,13 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+
+    public void GameQuit()
+    {
+        Application.Quit();     // 에디터를 종료하는 기능이 아니기 때문에 빌드 버전에서만 작동함.
+    }
+
+
     private void Update()
     {
         if (!isLive)
@@ -105,14 +114,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void GetExp()
+    public void GetExp(int enemyExp)
     {
         if (!isLive)
             return;
 
-        exp++;
+        exp += enemyExp;
 
-        if(exp == nextExp[Mathf.Min(level, nextExp.Length - 1)])    // 무한 경험치를 만드는 로직
+        if(exp >= nextExp[Mathf.Min(level, nextExp.Length - 1)])    // 무한 경험치를 만드는 로직
         {
             level++;
             exp = 0;
@@ -124,6 +133,7 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         Time.timeScale = 0;
+        // uiJoy.localScale = Vector3.zero;
     }
 
 
@@ -131,6 +141,11 @@ public class GameManager : MonoBehaviour
     {
         isLive = true;
         Time.timeScale = 1;
+        // uiJoy.localScale = Vector3.one;
     }
 
+    public void PressButton()
+    {
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Select);
+    }
 }

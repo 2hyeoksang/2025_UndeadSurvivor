@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     public float speed;
     public float health;    // 현재의 체력
     public float Maxhealth;
+    public int enemyExp;
 
     public RuntimeAnimatorController[] animeCon;
     public Rigidbody2D target;
@@ -70,11 +71,12 @@ public class Enemy : MonoBehaviour
         speed = data.speed;
         Maxhealth = data.health;
         health = data.health;
+        enemyExp = data.enemyExp;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.CompareTag("Bullet") || !isLive)     // 사망 로직이 연달아 실행되는 것을 방지하기 위해 조건 추가
+        if ((!collision.CompareTag("Bullet") && !collision.CompareTag("Melee")) || !isLive)     // 사망 로직이 연달아 실행되는 것을 방지하기 위해 조건 추가
             return;
 
         health -= collision.GetComponent<Bullet>().damage;
@@ -84,8 +86,15 @@ public class Enemy : MonoBehaviour
         {
             // .. Live, Hit Action
             anime.SetTrigger("Hit");
+            if (collision.CompareTag("Melee"))
+            { 
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.Melee); 
+            }
 
-            AudioManager.instance.PlaySfx(AudioManager.Sfx.Hit);
+            else if(collision.CompareTag("Bullet"))
+            {
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.Hit);
+            }
         }
 
         else
@@ -97,7 +106,7 @@ public class Enemy : MonoBehaviour
             spriter.sortingOrder = 1;
             anime.SetBool("Dead", true);
             GameManager.instance.kill++;
-            GameManager.instance.GetExp();
+            GameManager.instance.GetExp(enemyExp);
 
             if(GameManager.instance.isLive)     // 언데드 사망 사운드는 게임 종료 시에는 나지 않도록 조건 추가
                 AudioManager.instance.PlaySfx(AudioManager.Sfx.Dead);

@@ -28,12 +28,12 @@ public class Reposition : MonoBehaviour
 
                 if (diffX > diffY)
                 {
-                    transform.Translate(Vector3.right * dirX * 40);
+                    transform.Translate(Vector3.right * dirX * 120);
                 }
 
                 else if (diffX < diffY)
                 {
-                    transform.Translate(Vector3.up * dirY * 40);
+                    transform.Translate(Vector3.up * dirY * 120);
                 }
                 break;
 

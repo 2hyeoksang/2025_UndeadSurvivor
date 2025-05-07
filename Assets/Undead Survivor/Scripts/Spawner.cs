@@ -7,6 +7,8 @@ public class Spawner : MonoBehaviour
     float timer;
     int level;
     public float levelTime;
+
+
     private void Awake()
     {
         spawnPoint = GetComponentsInChildren<Transform>();
@@ -19,7 +21,8 @@ public class Spawner : MonoBehaviour
             return;
 
         timer += Time.deltaTime;     // deltaTime : 한 프레임이 소비한 시간
-        level = Mathf.Min(Mathf.FloorToInt(GameManager.instance.gameTime / levelTime), spawnData.Length - 1);  // 적절한 숫자로 나누어 시간에 맞춰 레벨이 올라가도록 작성
+        level = Mathf.Min(Mathf.FloorToInt(GameManager.instance.gameTime / levelTime), spawnData.Length - 1);  
+        // 적절한 숫자로 나누어 시간에 맞춰 레벨이 올라가도록 작성
         // FloorToInt : 소수점 아래는 버리고 Int형으로 바꾸는 함수, CeilToInt : 소수점 올리는거
 
         if (timer > spawnData[level].spawnTime)
@@ -48,4 +51,5 @@ public class SpawnData
     public float spawnTime;
     public int health;
     public float speed;
+    public int enemyExp;
 }

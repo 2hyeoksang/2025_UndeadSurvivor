@@ -17,7 +17,7 @@ public class AudioManager : MonoBehaviour
     AudioSource[] sfxPlayers;
     int channelsIndex;  // 맨 마지막에 실행했던 player의 index
 
-    public enum Sfx { Dead, Hit, LevelUp = 3, Lose, Melee, Range = 7, Select, Win } // 옆에 숫자는 index 번호
+    public enum Sfx { Dead, Hit, LevelUp = 3, Lose, Melee, Range = 7, Select, Win, PlayerHit } // 옆에 숫자는 index 번호
 
 
     private void Awake()
@@ -95,8 +95,6 @@ public class AudioManager : MonoBehaviour
             sfxPlayers[loopIndex].Play();
             break;  // 효과음 재생이 된 이후에는 꼭 break로 반복문 종료
         }
-
-        
     }
 
 }

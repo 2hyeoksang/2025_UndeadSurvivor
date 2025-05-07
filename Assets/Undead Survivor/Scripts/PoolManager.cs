@@ -14,6 +14,7 @@ public class PoolManager : MonoBehaviour
     private void Awake()
     {
         pools = new List<GameObject>[prefabs.Length];
+        // pool이란 GameObject를 담을 List를 prefabs의 길이만큼 만든 리스트 -> 리스트 안에 리스트
 
         for (int i = 0; i < pools.Length; i++)
         {

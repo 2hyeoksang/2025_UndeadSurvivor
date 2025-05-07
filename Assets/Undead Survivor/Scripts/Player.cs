@@ -8,6 +8,10 @@ public class Player : MonoBehaviour
     public Hand[] hands;
     public RuntimeAnimatorController[] animCon;
 
+    float SfxDelay = 0.25f;
+    float SfxTimer = 0f;
+    bool isDamaged = false;
+
     Rigidbody2D rigid;
     SpriteRenderer spriter;
     Animator anim;
@@ -28,16 +32,27 @@ public class Player : MonoBehaviour
         anim.runtimeAnimatorController = animCon[GameManager.instance.playerID];
     }
 
+    private void Update()
+    {
+        if (isDamaged)
+        {
+            SfxTimer -= Time.deltaTime;
+            if (SfxTimer < 0f)
+            {
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.PlayerHit);
+                SfxTimer = SfxDelay;
+            }
+        }
 
-    //void Update()
-    //{
-    //    inputVec.x = Input.GetAxisRaw("Horizontal");
-    //    inputVec.y = Input.GetAxisRaw("Vertical");
-    //}
+        else
+        {
+            SfxTimer = 0;
+        }
+    }
 
     void OnMove(InputValue value)
     {
-        inputVec = value.Get<Vector2>();
+        inputVec = value.Get<Vector2>();    // Get<T> : 프로필에서 설정한 컨트롤 타입 T 값을 가져오는 함수
     }
 
      void FixedUpdate()
@@ -77,8 +92,13 @@ public class Player : MonoBehaviour
         if (!GameManager.instance.isLive)
             return;
 
-        GameManager.instance.health -= Time.deltaTime * 10;
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            isDamaged = true;
+        }
 
+        GameManager.instance.health -= Time.deltaTime * 10;
+        
         if (GameManager.instance.health < 0)
         {
             for (int index = 2; index < transform.childCount; index++)
@@ -88,6 +108,16 @@ public class Player : MonoBehaviour
 
             anim.SetTrigger("Dead");
             GameManager.instance.GameOver();
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (!GameManager.instance.isLive)
+            return;
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            isDamaged = false;
         }
     }
 }
